@@ -31,9 +31,13 @@ def upgrade():
         sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_user_sessions_id'), 'user_sessions', ['id'], unique=False)
+    op.create_index(op.f('ix_user_sessions_user_id'), 'user_sessions', ['user_id'], unique=False)
+    op.create_index(op.f('ix_user_sessions_token_hash'), 'user_sessions', ['token_hash'], unique=True)
 
 def downgrade():
-    # Drop user_sessions table
+    # Drop user_sessions table and all its indexes
+    op.drop_index(op.f('ix_user_sessions_token_hash'), table_name='user_sessions')
+    op.drop_index(op.f('ix_user_sessions_user_id'), table_name='user_sessions')
     op.drop_index(op.f('ix_user_sessions_id'), table_name='user_sessions')
     op.drop_table('user_sessions')
     
